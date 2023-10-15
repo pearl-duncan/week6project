@@ -6,13 +6,15 @@
         <h4>My Cart</h4>
     </div>
     {% for item in items %}
-    <div class="container cart-item-box">
-        <img src="{{ item.product_br.image_url }}" alt="{{ item.product_br.name }}">
-        <div class='cart-item-name'><h4><a href="{{ url_for('product_detail', product_id=item.product_id) }}">{{ item.product_br.name }}</a></h4></div>
-        <div class='cart-item-price'><p>${{ item.product_br.price }}</p></div>
-        <!-- Button trigger modal -->
-        <div class='cart-item-btn'><button type="button" class="btn btn-danger btn-height" data-bs-toggle="modal" data-bs-target="#deleteItem{{ item.id }}">Remove from Cart</button></div>
-        <!-- Modal -->
+    <div class="card" style="width: 18rem;">
+        <img src="{{ item.product_br.image_url }}" class="card-img-top" alt="{{ product.name }}">
+        <div class="card-body">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text">{{ product.description }}</p>
+          <p class="card-text">${{ product.price }}</p>
+          <div class='cart-item-btn'><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItem{{ item.id }}">Remove from Cart</button></div>
+        </div>
+    
         <div class="modal fade" id="deleteItem{{ item.id }}" tabindex="-1" aria-labelledby="deleteItemLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">

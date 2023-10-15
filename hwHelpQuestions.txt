@@ -1,0 +1,6 @@
+1. fix import errors
+2. which cart page?
+3. cart route good?
+4. make sure flashes work
+5. do i have to come up with products in the index.html- how to get them to the data base
+6. make sure it looks good

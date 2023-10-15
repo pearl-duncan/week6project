@@ -60,43 +60,43 @@ def login_page():
 def logout():
     logout_user()
     flash("You have successfully logged out", 'success')
-    return redirect(url_for('index'))
+    return redirect(url_for('login_page'))
 
-@app.route('/product_detail/<int:product_id>')
+@app.route('/product_details/<int:product_id>')
 @login_required
 def product_detail(product_id):
     product = Product.query.filter_by(product_id).first()
-    return render_template('product_detail.html', product=product) 
+    return render_template('product_details.html', product=product) 
 
-@app.route('/mycart/add/<int:product_id>', methods=['GET', 'POST'])
+@app.route('/cart/add/<product_id>', methods=['GET', 'POST'])
 @login_required
 def addtocart(product_id):
     product = Product.query.get_or_404(product_id)
     product_key = product.id
     user_key = current_user.id
-    new_product_in_cart = Cart(user_key, product_key)
-    db.session.add(new_product_in_cart)
+    cart_items = Cart(user_key, product_key)
+    db.session.add(cart_items)
     db.session.commit()
-    flash(f"{ product.name } has been added to your cart!", "info")
+    flash(f"{ product.name } has been added to your cart!", "success")
     return redirect(url_for('cart'))
 
-@app.route('/mycart', methods=['GET', 'POST'])
+@app.route('/cart', methods=['GET', 'POST'])
 @login_required
 def cart():
-    context = {
+    card = {
     'title': "My Cart",
     'items': Cart.query.all(),
     'items': Cart.query.filter(Cart.user_id==current_user.id).all(),
-    'total': 0.00
+    'total': Cart.query.filter(Product.price).all()
     }
-    if not context['items']:
-        return render_template('mycart.html', **context)
+    if not card:
+        return render_template('cart.html', card = card)
     else:
-        for item in context['items']:
-            context['total'] += float(item.product_br.price)
-    return render_template('mycart.html', **context)
+        for item in card['items']:
+            card['total'] += float(item.Product.price)
+    return render_template('cart.html', card=card, item=item)
 
-@app.route('/mycart/remove/<int:item_id>', methods=['POST'])
+@app.route('/cart/remove/<item_id>', methods=['POST'])
 @login_required
 def remove_from_cart(item_id):
     item = Cart.query.get_or_404(item_id)
@@ -106,16 +106,4 @@ def remove_from_cart(item_id):
     return redirect(url_for('cart'))
 
 
-
-
-
-@app.route('/contactus')
-def contactus():
-    title = 'Contact Us'
-    return render_template('/footer/contactus.html', title = title)
-
-@app.route('/aboutus')
-def aboutus():
-    title = 'About Us'
-    return render_template('/footer/aboutus.html', title = title)
 

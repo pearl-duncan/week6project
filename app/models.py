@@ -14,6 +14,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(45))
 
     product = db.relationship("Product", backref='added to cart')
+    cart = db.relationship("Cart", backref='your cart')
 
     def __init__(self, username, email, password):
         self.username = username
@@ -23,13 +24,21 @@ class User(db.Model, UserMixin):
 class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     img_url = db.Column(db.String, nullable=False)
+    name = db.Column(db.String, nullable=False)
     description = db.Column(db.String(500))
+    price = db.column(db.Float, nullable=False)
+    cart_items= db.relationship('Cart', backref='Product in cart')
    
 
-    def __init__(self, img_url, description):
+    def __init__(self, img_url, description, price):
         self.img_url = img_url
         self.description = description
+        self.price = price
 
+class Cart(db.Model):
+    id=db.Columm(db.Integer, primary_key=True)
+    product_id=db.Column(db.Integer, db.ForeignKey('product.id'))
+    user_id=db.Column(db.Integer, db.ForeignKey('user.id'))
   
 
 
