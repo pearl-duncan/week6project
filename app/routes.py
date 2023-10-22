@@ -1,13 +1,33 @@
 from app import app, db
 from flask import render_template, request, flash, redirect, url_for
-from app.forms import LoginForm, SignUpForm
-from app.models import User, Product, Cart
+from .forms import LoginForm, SignUpForm, ProductForm
+from .models import User, Product, Cart
 from flask_login import login_user, logout_user, login_required, current_user
-
 
 @app.route("/")
 def index():
-    return render_template('index.html')
+    products = Product.query.all()
+    return render_template('index.html', products=products)
+
+@app.route("/create_product", methods =['GET', 'POST'])
+def create():
+    form = ProductForm()
+    if request.method == "POST":
+        if form.validate():
+            img_url = form.img_url.data
+            name = form.name.data
+            description = form.description.data
+            price = form.price.data
+
+            new_product = Product(img_url, name, description, price)
+            
+            db.session.add(new_product)
+            db.session.commit()
+
+            flash("product created!", 'success')
+        else:
+            flash('Invalid form. Please try again.', 'error')
+    return render_template('create_product.html', form = form)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -62,11 +82,11 @@ def logout():
     flash("You have successfully logged out", 'success')
     return redirect(url_for('login_page'))
 
-@app.route('/product_details/<int:product_id>')
+@app.route('/product_detail/<product_id>')
 @login_required
 def product_detail(product_id):
     product = Product.query.filter_by(product_id).first()
-    return render_template('product_details.html', product=product) 
+    return render_template('product_detail.html', product=product) 
 
 @app.route('/cart/add/<product_id>', methods=['GET', 'POST'])
 @login_required
@@ -74,9 +94,11 @@ def addtocart(product_id):
     product = Product.query.get_or_404(product_id)
     product_key = product.id
     user_key = current_user.id
-    cart_items = Cart(user_key, product_key)
-    db.session.add(cart_items)
+    cart_item = Cart(user_key, product_key)
+
+    db.session.add(cart_item)
     db.session.commit()
+    
     flash(f"{ product.name } has been added to your cart!", "success")
     return redirect(url_for('cart'))
 
@@ -87,23 +109,20 @@ def cart():
     'title': "My Cart",
     'items': Cart.query.all(),
     'items': Cart.query.filter(Cart.user_id==current_user.id).all(),
-    'total': Cart.query.filter(Product.price).all()
+    'total': Product.query.filter(Product.price).all()
     }
     if not card:
-        return render_template('cart.html', card = card)
+        return render_template('cart.html', card=card)
     else:
-        for item in card['items']:
-            card['total'] += float(item.Product.price)
-    return render_template('cart.html', card=card, item=item)
+        for product in card['items']:
+            card['total'] += float(product.price)
+    return render_template('cart.html', card=card)
 
 @app.route('/cart/remove/<item_id>', methods=['POST'])
 @login_required
-def remove_from_cart(item_id):
-    item = Cart.query.get_or_404(item_id)
-    db.session.delete(item)
+def delete(product_id):
+    cart = Cart.query.filter(product_id).all()
+    db.session.delete(cart)
     db.session.commit()
     flash("Item has been removed from your cart", "danger")
     return redirect(url_for('cart'))
-
-
-

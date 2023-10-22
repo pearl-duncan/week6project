@@ -17,3 +17,11 @@ class LoginForm(FlaskForm):
     password = PasswordField("Password", [DataRequired()])
     submit = SubmitField("Sign-In")
 
+class ProductForm(FlaskForm):
+    img_url = StringField('Img_url', [DataRequired()])
+    name = StringField('Name', [DataRequired()])
+    description = StringField('Description', [DataRequired()])
+    price = StringField('Price', [DataRequired()])
+    submit = SubmitField("Submit")
+
+

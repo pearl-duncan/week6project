@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container col-4 mt-5">
+    <a href="https://th.bing.com/th?id=OIP.LTILeY9vOIaUmAR2zmK97gHaCD&w=350&h=97&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" target="_self">
+        <img src="https://th.bing.com/th?id=OIP.LTILeY9vOIaUmAR2zmK97gHaCD&w=350&h=97&c=8&rs=1&qlt=90&o=6&dpr=1.3&pid=3.1&rm=2" >
+    </a>
+    <h1>Create a Product</h1>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+
+        {{ form.img_url.label(class='form.label')}}
+        {{ form.img_url(class='form-control') }}
+
+        {{ form.name.label(class='form.label')}}
+        {{ form.name(class='form-control') }}
+
+        {{ form.description.label(class='form.label')}}
+        {{ form.description(class='form-control') }}
+
+        {{ form.price.label(class='form.label')}}
+        {{ form.price(class='form-control') }}
+       
+        <div class="d-grid gap-2 my-3">
+            {{ form.submit(class='btn btn-primary') }}
+        </div>
+
+    </form>
+</div> 
+{% endblock %}
