@@ -5,29 +5,30 @@
     <div class="heading">
         <h4>My Cart</h4>
     </div>
-    {% for item in items %}
+    {% for item in card %}
     <div class="card" style="width: 18rem;">
         <img src="{{ item.product_br.image_url }}" class="card-img-top" alt="{{ product.name }}">
         <div class="card-body">
           <h5 class="card-title">{{ product.name }}</h5>
           <p class="card-text">{{ product.description }}</p>
           <p class="card-text">${{ product.price }}</p>
-          <div class='cart-item-btn'><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteItem{{ item.id }}">Remove from Cart</button></div>
+          <p>Total: ${{ total }}</p>
+          <div class='cart-btn'><button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCart{{ cart.id }}">Delete Cart</button></div>
         </div>
     
-        <div class="modal fade" id="deleteItem{{ item.id }}" tabindex="-1" aria-labelledby="deleteItemLabel" aria-hidden="true">
+        <div class="modal fade" id="deleteCart{{ cart.id }}" tabindex="-1" aria-labelledby="deleteCartLabel" aria-hidden="true">
             <div class="modal-dialog">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="deleteItemLabel">Remove from Cart - Are you sure?</h5>
+                        <h5 class="modal-title" id="deleteCartLabel">Delete Cart - Are you sure?</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        This action cannot be reversed. Are you sure you want to remove this item from your cart?
+                        This action cannot be reversed. Are you sure you want to delete your cart?
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <form action="{{ url_for('remove_from_cart', item_id=item.id) }}" method="POST">
+                        <form action="{{ url_for('delete', card=card) }}" method="POST">
                             <input type="submit" value="Delete" class="btn btn-danger">
                         </form>
                     </div>
@@ -38,6 +39,6 @@
     <br>
     {% endfor %}
     <br>
-    <h5>Total: ${{ total }}</h5>
+    
 </div>
 {% endblock content %}

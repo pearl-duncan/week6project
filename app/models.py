@@ -50,7 +50,7 @@ class Product(db.Model):
     img_url = db.Column(db.String, nullable=False)
     name = db.Column(db.String, nullable=False)
     description = db.Column(db.String(500))
-    price = db.Column(db.Float, nullable=False)
+    price = db.Column(db.String, nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
@@ -60,13 +60,12 @@ class Product(db.Model):
    
    
 
-    def __init__(self, img_url, name, description, price, created_by):
+    def __init__(self, img_url, name, description, price):
         self.id = str(uuid4())
         self.img_url = img_url
         self.name = name
         self.description = description
         self.price = price
-        self.created_by = created_by
 
     def create(self):
         db.session.add(self)

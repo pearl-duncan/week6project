@@ -1,7 +1,7 @@
-from app import app, db
+from app import app
 from flask import render_template, request, flash, redirect, url_for
 from .forms import LoginForm, SignUpForm, ProductForm
-from .models import User, Product, Cart
+from .models import User, Product, Cart, db
 from flask_login import login_user, logout_user, login_required, current_user
 
 @app.route("/")
@@ -32,7 +32,7 @@ def create():
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
-        return redirect(url_for('index'))
+        return redirect(url_for('login'))
     form = SignUpForm()
     if request.method == "POST":
         if form.validate():
@@ -48,8 +48,8 @@ def signup():
 
             flash("You're signed up!", 'success')
             return redirect(url_for('index'))
-    else:
-        flash('Invalid form. Please try again.', 'error')
+        else:
+            flash('Invalid form. Please try again.', 'error')
     return render_template('signup.html', form=form)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -82,7 +82,7 @@ def logout():
     flash("You have successfully logged out", 'success')
     return redirect(url_for('login_page'))
 
-@app.route('/product_detail/<product_id>')
+@app.route('/product/<product_id>')
 @login_required
 def product_detail(product_id):
     product = Product.query.filter_by(product_id).first()
@@ -118,11 +118,41 @@ def cart():
             card['total'] += float(product.price)
     return render_template('cart.html', card=card)
 
-@app.route('/cart/remove/<item_id>', methods=['POST'])
+@app.route('/cart/remove/<product_id>', methods=['POST'])
 @login_required
 def delete(product_id):
     cart = Cart.query.filter(product_id).all()
     db.session.delete(cart)
     db.session.commit()
-    flash("Item has been removed from your cart", "danger")
+    flash("your cart has been deleted", "danger")
     return redirect(url_for('cart'))
+
+@app.route("/delete_product/<product_id>", methods=['GET', 'POST'])
+def deleted(product_id):
+    form = ProductForm()
+    product = Product.query.filter_by(product_id).one_or_none()
+    db.session.delete(product)
+    db.session.commit()
+    flash('product has beem deleted')
+    return render_template('edit_product.html', form = form)
+
+@app.route("/edit_product/<product_id>")
+def edit(product_id):
+    form = ProductForm()
+    if request.method == "POST":
+        if form.validate() and product_id==product_id:
+            img_url = form.img_url.data
+            name = form.name.data
+            description = form.description.data
+            price = form.price.data
+
+            new_product = Product(img_url, name, description, price)
+            
+            db.session.add(new_product)
+            db.session.commit()
+
+            flash("product edited!", 'success')
+        else:
+            flash('Invalid form. Please try again.', 'error')
+    return render_template('edit_product.html', form = form)
+
