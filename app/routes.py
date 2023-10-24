@@ -14,7 +14,7 @@ def create():
     form = ProductForm()
     if request.method == "POST":
         if form.validate():
-            img_url = form.img_url.data
+            img_url = form.img_url
             name = form.name.data
             description = form.description.data
             price = form.price.data
@@ -83,7 +83,6 @@ def logout():
     return redirect(url_for('login_page'))
 
 @app.route('/product/<product_id>')
-@login_required
 def product_detail(product_id):
     product = Product.query.filter_by(product_id).first()
     return render_template('product_detail.html', product=product) 
@@ -103,8 +102,7 @@ def addtocart(product_id):
     return redirect(url_for('cart'))
 
 @app.route('/cart', methods=['GET', 'POST'])
-@login_required
-def cart():
+def cart(current_user):
     card = {
     'title': "My Cart",
     'items': Cart.query.all(),
